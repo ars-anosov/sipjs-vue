@@ -5,6 +5,7 @@
       <AppBar />
       <br />
       <PhoneReg v-if="sip.displayReg" />
+      <PhonePad v-else />
       <br />
       <Copyright />
     </v-container>

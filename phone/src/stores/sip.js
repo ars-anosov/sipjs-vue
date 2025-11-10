@@ -318,6 +318,108 @@ export const useSipStore = defineStore('sip', {
         thisState.phoneHeader = 'SIP proxy WebSocket problem'
       })
 
+    },
+
+    cleanupMedia(mediaElement, audioLocalIn, audioLocalOut) {
+      mediaElement.srcObject = null
+      mediaElement.pause()
+      audioLocalIn.pause()
+      audioLocalOut.pause()
+    },
+
+    handleClkSubmitIn() {
+      const thisState = this
+
+      const incomingSession = this.incomingSession
+      const sessionOptions  = this.sessionOptions
+      const audioLocalIn    = this.audioLocalIn
+      const callerUserNum   = this.callerUserNum
+    
+      this.incomeDisplay = false
+      this.incomeCallNow = true
+      this.phoneHeader = incomingSession.remoteIdentity.uri.raw.user+' > '+callerUserNum
+
+      audioLocalIn.pause()
+      incomingSession.accept(sessionOptions)
+    },
+    
+    handleClkSubmitOut() {
+      const thisState = this
+
+      const userAgent       = this.userAgent
+      const sessionOptions  = this.sessionOptions
+      const audioLocalIn    = this.audioLocalIn
+      const audioLocalOut   = this.audioLocalOut
+      const callerUserNum   = this.callerUserNum
+      const calleePhoneNum  = this.calleePhoneNum
+      const audioRemote     = this.audioRemote
+      const remoteStream    = this.remoteStream
+    
+
+      this.outgoCallNow = true
+      this.phoneHeader = calleePhoneNum+' < '+callerUserNum
+      audioLocalOut.play()
+
+      const target = UserAgent.makeURI("sip:"+calleePhoneNum+"@"+window.localStorage.getItem('uas_uri'))
+      if (!target) {
+        // throw new Error("Failed to create target URI.")
+        console.log("Failed to create target URI for:","sip:"+calleePhoneNum+"@"+window.localStorage.getItem('uas_uri'))
+      }
+
+      const inviter = new Inviter(userAgent, target, sessionOptions)
+      const outgoingSession = inviter
+      this.outgoingSession = outgoingSession
+
+
+      outgoingSession.delegate = {
+        // Handle incoming REFER request.
+        onRefer(referral) {
+          console.log('sip.js outgoingSession <--- incoming REFER request.')
+        }
+      }
+
+      outgoingSession.stateChange.addListener((newState) => {
+        switch (newState) {
+          case SessionState.Establishing:
+            thisState.logCall(outgoingSession, 'звонит', 'исх.')
+            thisState.CallsArrUpdate()
+            break;
+          case SessionState.Established:
+            thisState.logCall(outgoingSession, 'разговор', 'исх.')
+            thisState.CallsArrUpdate()
+            audioLocalOut.pause()
+            setupRemoteMedia(outgoingSession, audioRemote, remoteStream)
+            break;
+          case SessionState.Terminated:
+            thisState.logCall(outgoingSession, 'завершен', 'исх.')
+            thisState.CallsArrUpdate()
+            cleanupMedia(audioRemote, audioLocalIn, audioLocalOut)
+            thisState.handleClkReset(outgoingSession, false, callerUserNum)
+            break;
+          default:
+            break;
+        }
+      })
+    
+      // Send the INVITE request
+      outgoingSession.invite()
+        .then(() => {
+          // INVITE sent
+        })
+        .catch((error) => {
+          console.log('inviter INVITE send ERROR !', error)
+        })
+      },
+    
+    handleClkReset(outgoingSession, incomingSession, phoneHeader) {
+      if (outgoingSession) endCall(outgoingSession)
+      if (incomingSession) endCall(incomingSession)
+  
+      this.phoneHeader = phoneHeader
+      this.calleePhoneNum = ''
+      this.incomeDisplay = false
+      this.outgoCallNow = false
+      this.incomeCallNow = false
     }
   }
 
