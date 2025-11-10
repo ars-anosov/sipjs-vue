@@ -1,6 +1,6 @@
 <template>
   <v-card elevation="8" class="pa-2">
-    <v-card-title>{{ phoneHeader }}</v-card-title>
+    <v-card-title>{{ sip.phoneHeader }}</v-card-title>
     <v-divider></v-divider>
     <v-form ref="formRef" v-model="formValid" @submit.prevent="handleRegister">
       <v-row>
@@ -38,18 +38,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { UserAgent } from "sip.js"
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useSipStore } from '@/stores/sip'
-
 const sip = useSipStore()
-const phoneHeader = ref('SIP Registration')
+
 const formRef = ref(null)
 const formValid = ref(false)
-
-const requiredRule = value => !!value || 'Field is required'
+const requiredRule = value => !!value || 'Пусто'
 
 onMounted(() => {
   console.log('PhoneReg MOUNT')
+})
+
+onUnmounted(() => {
+  console.log('PhoneReg UNMOUNT')
 })
 
 function handleRegister() {
@@ -60,6 +63,45 @@ function handleRegister() {
 
   const uriHost = localStorage.getItem('uas_uri')
   const wssPort = localStorage.getItem('wss_port')
-  sip.register(uriHost, wssPort)
+  // sip.register(uriHost, wssPort)
+
+
+
+  let uri = undefined
+  if (sip.callerUserNum) {
+    uri = UserAgent.makeURI("sip:"+sip.callerUserNum+"@"+uriHost)
+    if (!uri) {
+      // throw new Error("Failed to create URI")
+      console.log("Failed to create UserAgent URI for:","sip:"+sip.callerUserNum+"@"+uriHost)
+    }
+  }
+
+  const userAgentOptions = {
+    uri,
+    authorizationUsername: sip.callerUserNum,
+    authorizationPassword: sip.regUserPass,
+    displayName: "WebRTC user "+sip.callerUserNum,
+    hackIpInContact: true,
+    transportOptions: {
+      server: "wss://"+uriHost+":"+wssPort
+    },
+    logLevel: process.env.NODE_ENV === 'production' ? "error" : "debug"
+  }
+
+  const constrainsDefault = {
+    audio: true,
+    video: false,
+  }
+
+  const sessionOptions = {
+    sessionDescriptionHandlerOptions: {
+      constraints: constrainsDefault,
+    }
+  }
+
+  if (userAgentOptions.authorizationUsername) {
+    sip.handleClkRegister(userAgentOptions, sessionOptions)
+  }
+
 }
 </script>
