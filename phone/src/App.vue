@@ -7,6 +7,8 @@
       <PhoneReg v-if="sip.displayReg" />
       <PhonePad v-else />
       <br />
+      <PhoneHistory />
+      <br />
       <Copyright />
     </v-container>
   </v-app>

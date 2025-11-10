@@ -1,7 +1,7 @@
 <template>
   <v-card elevation="8" class="pa-2">
     <v-card-title>{{ sip.phoneHeader }}</v-card-title>
-    <v-divider></v-divider>
+    <!-- <v-divider></v-divider> -->
     <v-form ref="formRef" v-model="formValid" @submit.prevent="handleRegister">
       <v-row>
         <v-col cols="12" sm="6">
