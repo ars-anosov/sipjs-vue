@@ -4,10 +4,30 @@ import { UserAgent } from 'sip.js'
 
 export const useSipStore = defineStore('sip', {
   state: () => ({
-    userAgent: null,
-    registered: false,
-    callerUserNum: '',
-    regUserPass: '',
+    displayPad      : false,
+    displayReg      : true,
+    displayIco      : true,
+    status          : '',
+
+    userAgentOptions  : null,
+    sessionOptions    : null,
+    userAgent         : null,
+    audioLocalIn      : null,
+    audioLocalOut     : null,
+    audioRemote       : null,
+    remoteStream      : null,
+    incomingSession   : null,
+    outgoingSession   : null,
+    
+    phoneHeader     : 'Не зарегистрирован',
+    callerUserNum   : '',
+    regUserPass     : '',
+    calleePhoneNum  : '',
+    incomeDisplay   : false,
+    outgoCallNow    : false,
+    incomeCallNow   : false,
+
+    callsArr        : []
   }),
   actions: {
     async register(uriHost, wssPort) {
