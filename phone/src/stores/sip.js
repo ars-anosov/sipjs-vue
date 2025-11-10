@@ -120,6 +120,25 @@ export const useSipStore = defineStore('sip', {
       }
     },
 
+
+    // https://sipjs.com/guides/attach-media/
+    setupRemoteMedia(session, mediaElement, remoteStream) {
+      session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
+        if (receiver.track) {
+          remoteStream.addTrack(receiver.track);
+        }
+      });
+      mediaElement.srcObject = remoteStream;
+      mediaElement.play();
+    },
+
+    cleanupMedia(mediaElement, audioLocalIn, audioLocalOut) {
+      mediaElement.srcObject = null
+      mediaElement.pause()
+      audioLocalIn.pause()
+      audioLocalOut.pause()
+    },
+
     handleClkReset(outgoingSession, incomingSession, phoneHeader) {
       if (outgoingSession) endCall(outgoingSession)
       if (incomingSession) endCall(incomingSession)
@@ -142,6 +161,7 @@ export const useSipStore = defineStore('sip', {
       audioLocalOut.preload = 'auto'
       audioLocalOut.src = 'sounds/sipjs/outgoing.mp3'
       audioLocalOut.loop = true
+      console.log('audioLocalOut --------------------', audioLocalOut)
 
       const audioRemote = new Audio()
 
