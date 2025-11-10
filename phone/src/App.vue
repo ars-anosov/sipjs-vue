@@ -12,6 +12,8 @@
   </v-app>
 </template>
 
+
+
 <script setup>
   import { useSipStore } from '@/stores/sip'
   const sip = useSipStore()

@@ -43,6 +43,49 @@ export const useSipStore = defineStore('sip', {
     callsArr        : []
   }),
   actions: {
+
+    // https://sipjs.com/guides/end-call/
+    endCall(session) {
+      switch(session.state) {
+        case SessionState.Initial:
+        case SessionState.Establishing:
+          if (session instanceof Inviter) {
+            // An unestablished outgoing session
+            session.cancel();
+          } else {
+            // An unestablished incoming session
+            session.reject();
+          }
+          break;
+        case SessionState.Established:
+          // An established session
+          session.bye();
+          break;
+        case SessionState.Terminating:
+        case SessionState.Terminated:
+          // Cannot terminate a session that is already terminated
+          break;
+      }
+    },
+
+    // https://sipjs.com/guides/attach-media/
+    setupRemoteMedia(session, mediaElement, remoteStream) {
+      session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
+        if (receiver.track) {
+          remoteStream.addTrack(receiver.track);
+        }
+      });
+      mediaElement.srcObject = remoteStream;
+      mediaElement.play();
+    },
+
+    cleanupMedia(mediaElement, audioLocalIn, audioLocalOut) {
+      mediaElement.srcObject = null
+      mediaElement.pause()
+      audioLocalIn.pause()
+      audioLocalOut.pause()
+    },
+
     logCall(session, status, direction) {
       const log = {
         id   : session.id,
@@ -96,58 +139,7 @@ export const useSipStore = defineStore('sip', {
       this.callsArr = rows
     },
 
-    // https://sipjs.com/guides/end-call/
-    endCall(session) {
-      switch(session.state) {
-        case SessionState.Initial:
-        case SessionState.Establishing:
-          if (session instanceof Inviter) {
-            // An unestablished outgoing session
-            session.cancel();
-          } else {
-            // An unestablished incoming session
-            session.reject();
-          }
-          break;
-        case SessionState.Established:
-          // An established session
-          session.bye();
-          break;
-        case SessionState.Terminating:
-        case SessionState.Terminated:
-          // Cannot terminate a session that is already terminated
-          break;
-      }
-    },
 
-
-    // https://sipjs.com/guides/attach-media/
-    setupRemoteMedia(session, mediaElement, remoteStream) {
-      session.sessionDescriptionHandler.peerConnection.getReceivers().forEach((receiver) => {
-        if (receiver.track) {
-          remoteStream.addTrack(receiver.track);
-        }
-      });
-      mediaElement.srcObject = remoteStream;
-      mediaElement.play();
-    },
-
-    cleanupMedia(mediaElement, audioLocalIn, audioLocalOut) {
-      mediaElement.srcObject = null
-      mediaElement.pause()
-      audioLocalIn.pause()
-      audioLocalOut.pause()
-    },
-
-    handleClkReset(outgoingSession, incomingSession, phoneHeader) {
-      if (outgoingSession) endCall(outgoingSession)
-      if (incomingSession) endCall(incomingSession)
-      this.phoneHeader = phoneHeader
-      this.calleePhoneNum = ''
-      this.incomeDisplay = false
-      this.outgoCallNow = false
-      this.incomeCallNow = false
-    },
 
     handleClkRegister(userAgentOptions, sessionOptions) {
       const thisState = this
@@ -161,7 +153,6 @@ export const useSipStore = defineStore('sip', {
       audioLocalOut.preload = 'auto'
       audioLocalOut.src = 'sounds/sipjs/outgoing.mp3'
       audioLocalOut.loop = true
-      console.log('audioLocalOut --------------------', audioLocalOut)
 
       const audioRemote = new Audio()
 
@@ -193,12 +184,12 @@ export const useSipStore = defineStore('sip', {
               case SessionState.Established:
                 thisState.logCall(incomingSession, 'разговор', 'вх.')
                 thisState.CallsArrUpdate()
-                setupRemoteMedia(incomingSession, audioRemote, remoteStream)
+                thisState.setupRemoteMedia(incomingSession, audioRemote, remoteStream)
                 break;
               case SessionState.Terminated:
                 thisState.logCall(incomingSession, 'завершен', 'вх.')
                 thisState.CallsArrUpdate()
-                cleanupMedia(audioRemote, audioLocalIn, audioLocalOut)
+                thisState.cleanupMedia(audioRemote, audioLocalIn, audioLocalOut)
                 thisState.handleClkReset(false, incomingSession, userAgentOptions.authorizationUsername)
                 break;
               default:
@@ -261,7 +252,7 @@ export const useSipStore = defineStore('sip', {
           // Attempt reconnect
           userAgent.reconnect()
             .then(() => {
-              console.log('userAgent.reconnect()')
+              // console.log('userAgent.reconnect()')
               attemptingReconnection = false
             })
             .catch((error) => {
@@ -277,12 +268,12 @@ export const useSipStore = defineStore('sip', {
         registerer.register({
           requestDelegate: {
             onAccept(response) {
-              console.log('register.onAccept()',response)
+              // console.log('register.onAccept()',response)
               thisState.displayReg = false
               thisState.phoneHeader = response.message.from.displayName
             },
             onReject(response) {
-              console.log('register.onReject()',response)
+              // console.log('register.onReject()',response)
               thisState.displayReg = true
               thisState.phoneHeader = response.message.statusCode+' '+response.message.reasonPhrase
               // Принудительно отключаю, чтобы сбросить старые атрибуты user/secret
@@ -340,16 +331,9 @@ export const useSipStore = defineStore('sip', {
 
     },
 
-    cleanupMedia(mediaElement, audioLocalIn, audioLocalOut) {
-      mediaElement.srcObject = null
-      mediaElement.pause()
-      audioLocalIn.pause()
-      audioLocalOut.pause()
-    },
+
 
     handleClkSubmitIn() {
-      const thisState = this
-
       const incomingSession = this.incomingSession
       const sessionOptions  = this.sessionOptions
       const audioLocalIn    = this.audioLocalIn
@@ -362,7 +346,9 @@ export const useSipStore = defineStore('sip', {
       audioLocalIn.pause()
       incomingSession.accept(sessionOptions)
     },
-    
+
+
+
     handleClkSubmitOut() {
       const thisState = this
 
@@ -408,12 +394,12 @@ export const useSipStore = defineStore('sip', {
             thisState.logCall(outgoingSession, 'разговор', 'исх.')
             thisState.CallsArrUpdate()
             audioLocalOut.pause()
-            setupRemoteMedia(outgoingSession, audioRemote, remoteStream)
+            thisState.setupRemoteMedia(outgoingSession, audioRemote, remoteStream)
             break;
           case SessionState.Terminated:
             thisState.logCall(outgoingSession, 'завершен', 'исх.')
             thisState.CallsArrUpdate()
-            cleanupMedia(audioRemote, audioLocalIn, audioLocalOut)
+            thisState.cleanupMedia(audioRemote, audioLocalIn, audioLocalOut)
             thisState.handleClkReset(outgoingSession, false, callerUserNum)
             break;
           default:
@@ -429,11 +415,13 @@ export const useSipStore = defineStore('sip', {
         .catch((error) => {
           console.log('inviter INVITE send ERROR !', error)
         })
-      },
-    
+    },
+
+
+
     handleClkReset(outgoingSession, incomingSession, phoneHeader) {
-      if (outgoingSession) endCall(outgoingSession)
-      if (incomingSession) endCall(incomingSession)
+      if (outgoingSession) this.endCall(outgoingSession)
+      if (incomingSession) this.endCall(incomingSession)
   
       this.phoneHeader = phoneHeader
       this.calleePhoneNum = ''
@@ -441,6 +429,7 @@ export const useSipStore = defineStore('sip', {
       this.outgoCallNow = false
       this.incomeCallNow = false
     }
+  
   }
 
 })

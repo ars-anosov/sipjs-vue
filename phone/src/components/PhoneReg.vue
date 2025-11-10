@@ -37,71 +37,75 @@
   </v-card>
 </template>
 
+
+
 <script setup>
-import { UserAgent } from "sip.js"
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useSipStore } from '@/stores/sip'
-const sip = useSipStore()
+  import { UserAgent } from "sip.js"
+  import { ref, onMounted, onUnmounted } from 'vue'
+  import { useSipStore } from '@/stores/sip'
+  const sip = useSipStore()
 
-const formRef = ref(null)
-const formValid = ref(false)
-const requiredRule = value => !!value || 'Пусто'
+  const formRef = ref(null)
+  const formValid = ref(false)
+  const requiredRule = value => !!value || 'Пусто'
 
-onMounted(() => {
-  console.log('PhoneReg MOUNT')
-})
+  onMounted(() => {
+    console.log('PhoneReg MOUNT')
+  })
 
-onUnmounted(() => {
-  console.log('PhoneReg UNMOUNT')
-})
-
-function handleRegister() {
-  if (!formRef.value?.validate()) {
-    console.warn('Form validation failed')
-    return
-  }
-
-  const uriHost = localStorage.getItem('uas_uri')
-  const wssPort = localStorage.getItem('wss_port')
-  // sip.register(uriHost, wssPort)
+  onUnmounted(() => {
+    console.log('PhoneReg UNMOUNT')
+  })
 
 
 
-  let uri = undefined
-  if (sip.callerUserNum) {
-    uri = UserAgent.makeURI("sip:"+sip.callerUserNum+"@"+uriHost)
-    if (!uri) {
-      // throw new Error("Failed to create URI")
-      console.log("Failed to create UserAgent URI for:","sip:"+sip.callerUserNum+"@"+uriHost)
+  function handleRegister() {
+    if (!formRef.value?.validate()) {
+      console.warn('Form validation failed')
+      return
     }
-  }
 
-  const userAgentOptions = {
-    uri,
-    authorizationUsername: sip.callerUserNum,
-    authorizationPassword: sip.regUserPass,
-    displayName: "WebRTC user "+sip.callerUserNum,
-    hackIpInContact: true,
-    transportOptions: {
-      server: "wss://"+uriHost+":"+wssPort
-    },
-    logLevel: process.env.NODE_ENV === 'production' ? "error" : "debug"
-  }
+    const uriHost = localStorage.getItem('uas_uri')
+    const wssPort = localStorage.getItem('wss_port')
+    // sip.register(uriHost, wssPort)
 
-  const constrainsDefault = {
-    audio: true,
-    video: false,
-  }
 
-  const sessionOptions = {
-    sessionDescriptionHandlerOptions: {
-      constraints: constrainsDefault,
+
+    let uri = undefined
+    if (sip.callerUserNum) {
+      uri = UserAgent.makeURI("sip:"+sip.callerUserNum+"@"+uriHost)
+      if (!uri) {
+        // throw new Error("Failed to create URI")
+        console.log("Failed to create UserAgent URI for:","sip:"+sip.callerUserNum+"@"+uriHost)
+      }
     }
-  }
 
-  if (userAgentOptions.authorizationUsername) {
-    sip.handleClkRegister(userAgentOptions, sessionOptions)
-  }
+    const userAgentOptions = {
+      uri,
+      authorizationUsername: sip.callerUserNum,
+      authorizationPassword: sip.regUserPass,
+      displayName: "WebRTC user "+sip.callerUserNum,
+      hackIpInContact: true,
+      transportOptions: {
+        server: "wss://"+uriHost+":"+wssPort
+      },
+      logLevel: process.env.NODE_ENV === 'production' ? "error" : "debug"
+    }
 
-}
+    const constrainsDefault = {
+      audio: true,
+      video: false,
+    }
+
+    const sessionOptions = {
+      sessionDescriptionHandlerOptions: {
+        constraints: constrainsDefault,
+      }
+    }
+
+    if (userAgentOptions.authorizationUsername) {
+      sip.handleClkRegister(userAgentOptions, sessionOptions)
+    }
+
+  }
 </script>

@@ -12,6 +12,8 @@
   </p>
 </template>
 
+
+
 <script setup>
   import pkg from '../../package.json'
 </script>
