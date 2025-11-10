@@ -23,6 +23,7 @@ npm install --save vue vuetify
 npm install --save @fontsource/roboto @mdi/font
 npm install --save sip.js
 npm install --save-dev vite vite-plugin-vuetify @vitejs/plugin-vue
+npm install --save-dev pinia
 npm install --save-dev sass-embedded unplugin-fonts unplugin-vue-components
 ```
 

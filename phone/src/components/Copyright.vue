@@ -4,6 +4,7 @@
     sip.js {{pkg.dependencies['sip.js']}},
     vue {{pkg.dependencies['vue']}},
     vuetify {{pkg.dependencies['vuetify']}},
+    pinia {{pkg.dependencies['pinia']}},
     vite {{pkg.devDependencies['vite']}}
     <br />
     <strong>v.{{pkg.version}}</strong>

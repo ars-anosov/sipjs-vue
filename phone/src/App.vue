@@ -4,6 +4,8 @@
     <v-container class="rounded-xl border-sm border-dashed" max-width="600px">
       <AppBar />
       <br />
+      <PhoneReg />
+      <br />
       <Copyright />
     </v-container>
   </v-app>
