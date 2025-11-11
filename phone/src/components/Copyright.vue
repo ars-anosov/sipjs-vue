@@ -8,7 +8,7 @@
     vite {{pkg.devDependencies['vite']}}
     <br />
     <strong>v.{{pkg.version}}</strong>
-    Copyright &copy; <a href="https://github.com/ars-anosov/sipjs-react">ars</a> {{new Date().getFullYear()}}.
+    Copyright &copy; <a href="https://github.com/ars-anosov/sipjs-vue">ars</a> {{new Date().getFullYear()}}.
   </p>
 </template>
 

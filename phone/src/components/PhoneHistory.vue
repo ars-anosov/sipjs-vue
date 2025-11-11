@@ -1,16 +1,16 @@
 <template>
   <v-card elevation="8" class="pa-2">
     <v-card-title>История звонков</v-card-title>
-    <v-table>
+    <v-table density="compact">
       <thead>
         <tr>
-          <th class="text-caption">
+          <th>
             Время
           </th>
           <th>
             Абонент
           </th>
-          <th class="text-caption text-right">
+          <th class="text-right">
             Статус
           </th>
         </tr>

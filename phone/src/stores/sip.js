@@ -130,7 +130,7 @@ export const useSipStore = defineStore('sip', {
       }
     
       // Удаляю первую строчку лога (самую старую)
-      if (rows.length > 5) {
+      if (rows.length > 10) {
         delete calllog[rows[0].id]
         localStorage.setItem('sipCalls', JSON.stringify(calllog))
       }
