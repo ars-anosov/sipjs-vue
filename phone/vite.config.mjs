@@ -10,6 +10,14 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './', // делает ссылки относительными
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  },
+  server: {
+    port: 3000,
+  },
   plugins: [
     Vue({
       template: { transformAssetUrls },
@@ -46,8 +54,5 @@ export default defineConfig({
       '.tsx',
       '.vue',
     ],
-  },
-  server: {
-    port: 3000,
-  },
+  }
 })

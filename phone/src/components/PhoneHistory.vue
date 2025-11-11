@@ -1,21 +1,31 @@
 <template>
   <v-card elevation="8" class="pa-2">
     <v-card-title>История звонков</v-card-title>
-    <!-- <v-divider></v-divider> -->
-    <div v-if="sip.callsArr.length === 0" class="empty">Нет звонков</div>
-    <div v-else class="call-list">
-    <div
-      v-for="(call, index) in sip.callsArr"
-      :key="index"
-      class="call-item"
-    >
-      <div class="call-info">
-      <span class="direction">{{ call.flow }}</span>
-      <span class="identity">{{ call.uri }}</span>
-      </div>
-      <div class="timestamp">{{ formatDate(call.start) }}</div>
-    </div>
-    </div>
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-caption">
+            Время
+          </th>
+          <th>
+            Абонент
+          </th>
+          <th class="text-caption text-right">
+            Статус
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="item in sip.callsArr"
+          :key="item.start"
+        >
+          <td class="text-caption">{{ formatDate(item.start) }}</td>
+          <td>{{ item.uri }}</td>
+          <td class="text-right text-caption">{{ item.flow + ' ' + item.status }}</td>
+        </tr>
+      </tbody>
+    </v-table>
   </v-card>
 </template>
   
@@ -42,35 +52,6 @@
 </script>
   
 <style scoped>
-  .phone-history {
-    padding: 1rem;
-  }
-  h2 {
-    margin-bottom: 1rem;
-  }
-  .empty {
-    color: #888;
-    font-style: italic;
-  }
-  .call-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .call-item {
-    background: #fff;
-    padding: 0.75rem;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  .call-info {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-  }
-  .timestamp {
-    font-size: 0.875rem;
-    color: #666;
-  }
+  
 </style>
   
