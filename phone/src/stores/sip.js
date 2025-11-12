@@ -1,5 +1,7 @@
 // stores/sip.js
 import { defineStore } from 'pinia'
+import { markRaw } from 'vue';
+
 // sip.js
 // https://github.com/onsip/SIP.js/blob/main/docs/api.md
 import {
@@ -22,15 +24,15 @@ export const useSipStore = defineStore('sip', {
     displayIco      : true,
     status          : '',
 
-    userAgentOptions  : null,
-    sessionOptions    : null,
-    userAgent         : null,
-    audioLocalIn      : null,
-    audioLocalOut     : null,
-    audioRemote       : null,
-    remoteStream      : null,
-    incomingSession   : null,
-    outgoingSession   : null,
+    userAgentOptions  : null, // markRaw
+    sessionOptions    : null, // markRaw
+    userAgent         : null, // markRaw
+    audioLocalIn      : null, // markRaw
+    audioLocalOut     : null, // markRaw
+    audioRemote       : null, // markRaw
+    remoteStream      : null, // markRaw
+    incomingSession   : null, // markRaw
+    outgoingSession   : null, // markRaw
     
     phoneHeader     : 'Не зарегистрирован',
     callerUserNum   : '',
@@ -167,7 +169,7 @@ export const useSipStore = defineStore('sip', {
         onInvite(invitation) {
 
           const incomingSession = invitation
-          thisState.incomingSession = incomingSession,
+          thisState.incomingSession = markRaw(incomingSession)
       
           incomingSession.delegate = {
             // Handle incoming REFER request.
@@ -312,13 +314,13 @@ export const useSipStore = defineStore('sip', {
 
 
 
-      thisState.audioLocalIn = audioLocalIn
-      thisState.audioLocalOut = audioLocalOut
-      thisState.audioRemote = audioRemote
-      thisState.remoteStream = remoteStream
-      thisState.userAgentOptions = userAgentOptions
-      thisState.sessionOptions = sessionOptions
-      thisState.userAgent = userAgent
+      thisState.audioLocalIn = markRaw(audioLocalIn)
+      thisState.audioLocalOut = markRaw(audioLocalOut)
+      thisState.audioRemote = markRaw(audioRemote)
+      thisState.remoteStream = markRaw(remoteStream)
+      thisState.userAgentOptions = markRaw(userAgentOptions)
+      thisState.sessionOptions = markRaw(sessionOptions)
+      thisState.userAgent = markRaw(userAgent)
       thisState.phoneHeader = 'UserAgent starting...'
 
       userAgent.start().then(() => {
@@ -374,7 +376,7 @@ export const useSipStore = defineStore('sip', {
 
       const inviter = new Inviter(userAgent, target, sessionOptions)
       const outgoingSession = inviter
-      this.outgoingSession = outgoingSession
+      this.outgoingSession = markRaw(outgoingSession)
 
 
       outgoingSession.delegate = {
