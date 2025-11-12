@@ -436,6 +436,14 @@ export const useSipStore = defineStore('sip', {
       this.incomeDisplay = false
       this.outgoCallNow = false
       this.incomeCallNow = false
+    },
+
+
+    appendKey(key) {
+      this.calleePhoneNum += key
+    },
+    deleteLast() {
+      this.calleePhoneNum = this.calleePhoneNum.slice(0, -1)
     }
   
   }
