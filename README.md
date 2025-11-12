@@ -12,7 +12,17 @@ npm install
 npm run dev
 ```
 
+## PhoneReg.vue
+![component_PhoneReg.png](img/component_PhoneReg.png)
 
+## PhonePad.vue
+![component_PhonePad.png](img/component_PhonePad.png)
+
+## PhoneHistory.vue
+![component_PhoneHistory.png](img/component_PhoneHistory.png)
+
+## PhoneControl.vue
+![component_PhoneControl.png](img/component_PhoneControl.png)
 
 ## package.json
 Обновиться
