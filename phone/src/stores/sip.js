@@ -203,7 +203,7 @@ export const useSipStore = defineStore('sip', {
           thisState.logCall(incomingSession, 'звонит', 'вх.')
           thisState.CallsArrUpdate()
           thisState.incomeDisplay = true
-          thisState.phoneHeader = userAgentOptions.authorizationUsername+' < '+incomingSession.remoteIdentity.uri.raw.user
+          thisState.phoneHeader = incomingSession.remoteIdentity.uri.raw.user+' ⇢ '+userAgentOptions.authorizationUsername
           thisState.calleePhoneNum = incomingSession.remoteIdentity.uri.raw.user
         }
       }
@@ -343,7 +343,7 @@ export const useSipStore = defineStore('sip', {
     
       this.incomeDisplay = false
       this.incomeCallNow = true
-      this.phoneHeader = incomingSession.remoteIdentity.uri.raw.user+' > '+callerUserNum
+      this.phoneHeader = incomingSession.remoteIdentity.uri.raw.user+' ⇢ '+callerUserNum
 
       audioLocalIn.pause()
       incomingSession.accept(sessionOptions)
@@ -362,20 +362,24 @@ export const useSipStore = defineStore('sip', {
       const calleePhoneNum  = this.calleePhoneNum
       const audioRemote     = this.audioRemote
       const remoteStream    = this.remoteStream
-    
 
-      this.outgoCallNow = true
-      this.phoneHeader = calleePhoneNum+' < '+callerUserNum
-      audioLocalOut.play()
-
+      // Checks
+      if (!calleePhoneNum) {
+        console.log("calleePhoneNum is empty!")
+        return
+      }
       const target = UserAgent.makeURI("sip:"+calleePhoneNum+"@"+window.localStorage.getItem('uas_uri'))
       if (!target) {
-        // throw new Error("Failed to create target URI.")
         console.log("Failed to create target URI for:","sip:"+calleePhoneNum+"@"+window.localStorage.getItem('uas_uri'))
+        return
       }
 
-      const inviter = new Inviter(userAgent, target, sessionOptions)
-      const outgoingSession = inviter
+      // do it
+      this.outgoCallNow = true
+      this.phoneHeader = calleePhoneNum+' ⇠ '+callerUserNum
+      audioLocalOut.play()
+
+      const outgoingSession = new Inviter(userAgent, target, sessionOptions)
       this.outgoingSession = markRaw(outgoingSession)
 
 
@@ -424,6 +428,8 @@ export const useSipStore = defineStore('sip', {
     handleClkReset(outgoingSession, incomingSession, phoneHeader) {
       if (outgoingSession) this.endCall(outgoingSession)
       if (incomingSession) this.endCall(incomingSession)
+      this.audioLocalIn.pause()
+      this.audioLocalOut.pause()
   
       this.phoneHeader = phoneHeader
       this.calleePhoneNum = ''

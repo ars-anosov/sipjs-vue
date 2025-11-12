@@ -5,7 +5,7 @@
       <AppBar />
       <br />
       <PhoneReg v-if="sip.displayReg" />
-      <PhonePad v-else />
+      <PhonePad v-else :showInput="true" />
       <br />
       <PhoneHistory />
       <br />

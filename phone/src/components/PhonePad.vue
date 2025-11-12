@@ -3,7 +3,7 @@
     <v-card-title>{{ sip.phoneHeader }}</v-card-title>
     <!-- <v-divider></v-divider> -->
     <v-form ref="formRef" v-model="formValid" @submit.prevent="handleSubmit" @reset.prevent="handleReset">
-    <v-row>
+    <v-row v-if="props.showInput">
       <v-col cols="12" sm="12">
         <v-text-field
           v-model="sip.calleePhoneNum"
@@ -40,6 +40,9 @@
 
 <script setup>
   import { ref, onMounted, onUnmounted } from 'vue'
+  const props = defineProps({
+    showInput: true
+  })
   import { useSipStore } from '@/stores/sip'
   const sip = useSipStore()
 
