@@ -1,5 +1,5 @@
 <template>
-  <p class="text-center text-caption font-weight-light">
+  <p class="text-center text-caption font-weight-light mt-8">
     powered by
     sip.js {{pkg.dependencies['sip.js']}},
     vue {{pkg.dependencies['vue']}},

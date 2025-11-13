@@ -1,11 +1,10 @@
 <template>
   <v-toolbar color="primary">
-    <v-btn icon="mdi-menu"></v-btn>
+    <LeftMenu />
+    <v-toolbar-title>WebRTC</v-toolbar-title>
 
-    <v-toolbar-title text="WebRTC"></v-toolbar-title>
     {{ sip.phoneHeader }}
-    
-    <PhoneControl/>
+    <PhoneControl />
   </v-toolbar>
 </template>
 
@@ -15,5 +14,6 @@
   import { useSipStore } from '@/stores/sip'
   const sip = useSipStore()
 
+  import LeftMenu from './LeftMenu.vue'
   import PhoneControl from './PhoneControl.vue'
 </script>

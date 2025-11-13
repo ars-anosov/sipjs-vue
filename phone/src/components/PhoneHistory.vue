@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="8" class="pa-2">
+  <v-card elevation="8" class="pa-2 ma-2">
     <v-card-title>История звонков</v-card-title>
     <v-table density="compact">
       <thead>

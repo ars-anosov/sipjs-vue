@@ -3,12 +3,9 @@
     <br />
     <v-container class="rounded-xl border-sm border-dashed" max-width="600px">
       <AppBar />
-      <br />
       <PhoneReg v-if="sip.displayReg" />
-      <PhonePad v-else :showInput="true" />
-      <br />
-      <PhoneHistory />
-      <br />
+      <PhonePad v-if="sip.displayPad" :showInput="true" />
+      <PhoneHistory v-if="sip.displayHistory" />
       <Copyright />
     </v-container>
   </v-app>

@@ -2,7 +2,7 @@
   "name": "vite-material-vuetify",
   "private": true,
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

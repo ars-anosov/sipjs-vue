@@ -1,21 +1,24 @@
 <template>
   <v-card
     elevation="8"
-    class="mx-auto pa-2"
+    class="mx-auto pa-2 ma-2"
     max-width="300"
   >
     <v-card-title>{{ sip.phoneHeader }}</v-card-title>
     <!-- <v-divider></v-divider> -->
     <v-form @submit.prevent="handleSubmit" @reset.prevent="handleReset">
     <v-row v-if="props.showInput">
-      <v-col cols="7" sm="9">
+      <v-col cols="12" sm="12">
         <v-text-field
           v-model="sip.calleePhoneNum"
           label="98..."
-        ></v-text-field>
-      </v-col>
-      <v-col cols="5" sm="3" class="text-left">
-        <v-btn icon="mdi-arrow-left-bold-outline" @click="sip.deleteLast"></v-btn>
+        >
+          <template v-slot:append>
+            <v-icon color="gray" @click="deleteLast">
+              mdi-backspace
+            </v-icon>
+          </template>
+        </v-text-field>
       </v-col>
     </v-row>
 
@@ -58,7 +61,7 @@
             >
               <v-btn
                 height="40"
-                @click="sip.appendKey(key[0])"
+                @click="appendKey(key[0])"
               >
                 <span>
                   <div class="mb-1">{{ key[0] }}</div>
@@ -120,9 +123,15 @@
   }
 
   function handleReset() {
-    sip.handleClkReset(sip.outgoingSession, sip.incomingSession, sip.callerUserNum)
+    sip.handleClkReset(sip.outgoingSession, sip.incomingSession, sip.regNow ? sip.callerUserNum : 'Не зарегистрирован')
   }
 
+  function appendKey(key) {
+    sip.calleePhoneNum += key
+  }
+  function deleteLast() {
+    sip.calleePhoneNum = sip.calleePhoneNum.slice(0, -1)
+  }
 </script>
 
 

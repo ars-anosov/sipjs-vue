@@ -19,11 +19,6 @@ import {
 
 export const useSipStore = defineStore('sip', {
   state: () => ({
-    displayPad      : false,
-    displayReg      : true,
-    displayIco      : true,
-    status          : '',
-
     userAgentOptions  : null, // markRaw
     sessionOptions    : null, // markRaw
     userAgent         : null, // markRaw
@@ -33,15 +28,20 @@ export const useSipStore = defineStore('sip', {
     remoteStream      : null, // markRaw
     incomingSession   : null, // markRaw
     outgoingSession   : null, // markRaw
-    
+
+    displayReg      : true,
+    displayPad      : false,
+    displayHistory  : false,
     phoneHeader     : 'Не зарегистрирован',
-    callerUserNum   : '',
+    uriHost         : localStorage.getItem('uriHost') ? localStorage.getItem('uriHost') : '',
+    wssPort         : localStorage.getItem('wssPort') ? localStorage.getItem('wssPort') : '',
+    callerUserNum   : localStorage.getItem('callerUserNum') ? localStorage.getItem('callerUserNum') : '',
     regUserPass     : '',
     calleePhoneNum  : '',
     incomeDisplay   : false,
     outgoCallNow    : false,
     incomeCallNow   : false,
-
+    regNow          : false,
     callsArr        : []
   }),
   actions: {
@@ -144,6 +144,15 @@ export const useSipStore = defineStore('sip', {
 
 
     handleClkRegister(userAgentOptions, sessionOptions) {
+      // Checks
+      if (!this.uriHost || !this.wssPort || !this.callerUserNum || !this.regUserPass) {
+        console.log("Not all reg.data!")
+        return
+      }
+      localStorage.setItem('uriHost', this.uriHost)
+      localStorage.setItem('wssPort', this.wssPort)
+      localStorage.setItem('callerUserNum', this.callerUserNum)
+
       const thisState = this
 
       const audioLocalIn = new Audio()
@@ -240,7 +249,6 @@ export const useSipStore = defineStore('sip', {
         if (reconnectionAttempt > reconnectionAttempts) {
           return;
         }
-        thisState.displayReg = true
         thisState.phoneHeader = 'Reconnection'
 
 
@@ -271,33 +279,35 @@ export const useSipStore = defineStore('sip', {
           requestDelegate: {
             onAccept(response) {
               // console.log('register.onAccept()',response)
+              thisState.regNow = true
               thisState.displayReg = false
+              thisState.displayPad = true
+              thisState.displayHistory = true
               thisState.phoneHeader = response.message.from.displayName
             },
             onReject(response) {
               // console.log('register.onReject()',response)
-              thisState.displayReg = true
+              thisState.regNow = false
               thisState.phoneHeader = response.message.statusCode+' '+response.message.reasonPhrase
               // Принудительно отключаю, чтобы сбросить старые атрибуты user/secret
               setTimeout(() => {
                 userAgent.stop()
-              }, 1000)
+              }, 3000)
             },
           },
         })
         .catch((e) => {
           console.log('register.catch()',e)
-          thisState.displayReg = true
+          thisState.regNow = false
           thisState.phoneHeader = 'Registration error'
           // Принудительно отключаю, чтобы сбросить старые атрибуты user/secret
           setTimeout(() => {
             userAgent.stop()
-          }, 1000)
+          }, 3000)
         })
       }
 
       userAgent.delegate.onDisconnect = (error) => {
-        thisState.displayReg = true
         thisState.phoneHeader = 'Disconnected'
         // registerer.unregister()
         // .catch((e) => {
@@ -327,7 +337,7 @@ export const useSipStore = defineStore('sip', {
         // UA started
       })
       .catch((e) => {
-        thisState.displayReg = true
+        thisState.regNow = false
         thisState.phoneHeader = 'SIP proxy WebSocket problem'
       })
 
@@ -362,8 +372,17 @@ export const useSipStore = defineStore('sip', {
       const calleePhoneNum  = this.calleePhoneNum
       const audioRemote     = this.audioRemote
       const remoteStream    = this.remoteStream
+      const regNow          = this.regNow
 
       // Checks
+      if (!regNow) {
+        console.log("Not Registered state!")
+        return
+      }
+      if (!callerUserNum) {
+        console.log("callerUserNum is empty!")
+        return
+      }
       if (!calleePhoneNum) {
         console.log("calleePhoneNum is empty!")
         return
@@ -428,8 +447,8 @@ export const useSipStore = defineStore('sip', {
     handleClkReset(outgoingSession, incomingSession, phoneHeader) {
       if (outgoingSession) this.endCall(outgoingSession)
       if (incomingSession) this.endCall(incomingSession)
-      this.audioLocalIn.pause()
-      this.audioLocalOut.pause()
+      if (this.audioLocalIn) this.audioLocalIn.pause()
+      if (this.audioLocalOut) this.audioLocalOut.pause()
   
       this.phoneHeader = phoneHeader
       this.calleePhoneNum = ''
@@ -437,14 +456,6 @@ export const useSipStore = defineStore('sip', {
       this.outgoCallNow = false
       this.incomeCallNow = false
     },
-
-
-    appendKey(key) {
-      this.calleePhoneNum += key
-    },
-    deleteLast() {
-      this.calleePhoneNum = this.calleePhoneNum.slice(0, -1)
-    }
   
   }
 
