@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar color="primary">
+  <v-toolbar color="primary" class="pr-2">
     <LeftMenu />
     <v-toolbar-title>WebRTC</v-toolbar-title>
 

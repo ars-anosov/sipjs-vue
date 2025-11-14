@@ -1,7 +1,7 @@
 <template>
   <v-card
     elevation="8"
-    class="mx-auto pa-2 ma-2"
+    class="mx-auto pa-2 mt-4"
     max-width="300"
   >
     <v-card-title>{{ sip.phoneHeader }}</v-card-title>

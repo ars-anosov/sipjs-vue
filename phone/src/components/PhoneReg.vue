@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="8" class="pa-2 ma-2">
+  <v-card elevation="8" class="pa-2 mt-4">
     <!-- <v-divider></v-divider> -->
     <v-row v-if="sip.regNow">
       <v-col cols="12" sm="12" class="text-right">
