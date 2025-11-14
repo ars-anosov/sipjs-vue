@@ -3,9 +3,9 @@
   <v-menu>
     <template v-slot:activator="{ props }">
       <v-btn v-if="!sip.regNow" icon="mdi-phone-settings" variant="outlined" size="small" class="phone-ctl-btn" color="error" v-bind="props" ></v-btn>
-      <v-btn v-else-if="sip.outgoCallNow" icon="mdi-phone-outgoing" variant="outlined" size="small" class="phone-ctl-btn" color="success" v-bind="props" ></v-btn>
-      <v-btn v-else-if="sip.incomeCallNow" icon="mdi-phone-incoming" variant="outlined" size="small" class="phone-ctl-btn" color="success" v-bind="props" ></v-btn>
-      <v-btn v-else-if="sip.incomeDisplay" icon="mdi-phone-ring" variant="outlined" size="small" class="phone-ctl-btn blinking-btn" color="error" v-bind="props" ></v-btn>
+      <v-btn v-else-if="sip.outgoCallNow" icon="mdi-phone-outgoing" variant="outlined" size="small" class="phone-ctl-btn" v-bind="props" ></v-btn>
+      <v-btn v-else-if="sip.incomeCallNow" icon="mdi-phone-incoming" variant="outlined" size="small" class="phone-ctl-btn" v-bind="props" ></v-btn>
+      <v-btn v-else-if="sip.incomeDisplay" icon="mdi-phone-ring" variant="outlined" size="small" class="phone-ctl-btn blinking-btn" v-bind="props" ></v-btn>
       <v-btn v-else icon="mdi-phone" variant="outlined" size="small" class="phone-ctl-btn" v-bind="props"></v-btn>
     </template>
     <PhonePad :showInput="false" />

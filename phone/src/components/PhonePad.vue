@@ -24,14 +24,23 @@
 
     <v-row>
       <v-col cols="6" sm="6" class="text-center">
-        <v-btn
+        <v-btn v-if="sip.incomeDisplay"
+          color="success"
+          type="submit"
+          icon
+          class="blinking-btn"
+        >
+          <v-icon>mdi-phone-ring</v-icon>
+          <!-- <v-tooltip activator="parent" location="top">Answer</v-tooltip> -->
+        </v-btn>
+        <v-btn v-else
           color="success"
           type="submit"
           icon
           :disabled="sip.outgoCallNow || sip.incomeCallNow"
         >
           <v-icon>mdi-phone</v-icon>
-          <v-tooltip activator="parent" location="top">{{ sip.incomeDisplay ? 'Answer' : 'Call' }}</v-tooltip>
+          <!-- <v-tooltip activator="parent" location="top">Call</v-tooltip> -->
         </v-btn>
       </v-col>
       <v-col cols="6" sm="6" class="text-center">
@@ -41,7 +50,7 @@
           icon
         >
           <v-icon>mdi-phone-hangup</v-icon>
-          <v-tooltip activator="parent" location="top">End</v-tooltip>
+          <!-- <v-tooltip activator="parent" location="top">End</v-tooltip> -->
         </v-btn>
       </v-col>
     </v-row>
@@ -137,7 +146,19 @@
 
 
 <style scoped>
-/* .v-btn {
-  min-width: 100px;
-} */
+  .blinking-btn {
+    animation: blink 1s infinite alternate;
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 </style>
