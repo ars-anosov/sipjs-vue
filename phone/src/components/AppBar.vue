@@ -4,7 +4,7 @@
     <v-toolbar-title>WebRTC</v-toolbar-title>
 
     {{ sip.phoneHeader }}
-    <PhoneControl />
+    <PhoneControl v-if="sip.displayControl" />
   </v-toolbar>
 </template>
 

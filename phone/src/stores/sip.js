@@ -31,6 +31,7 @@ export const useSipStore = defineStore('sip', {
 
     displayReg      : true,
     displayPad      : false,
+    displayControl  : true,
     displayHistory  : false,
     phoneHeader     : 'Не зарегистрирован',
     uriHost         : localStorage.getItem('uriHost') ? localStorage.getItem('uriHost') : '',

@@ -7,15 +7,19 @@
     <v-list>
       <v-list-item @click="clkPhoneReg">
         <v-list-item-title>Карточка регистрации</v-list-item-title>
-        <v-list-item-subtitle>PhoneReg.vue component</v-list-item-subtitle>
+        <v-list-item-subtitle>PhoneReg.vue</v-list-item-subtitle>
       </v-list-item>
       <v-list-item @click="clkPhonePad">
         <v-list-item-title>Телефон с кнопками</v-list-item-title>
-        <v-list-item-subtitle>PhonePad.vue component</v-list-item-subtitle>
+        <v-list-item-subtitle>PhonePad.vue</v-list-item-subtitle>
       </v-list-item>
       <v-list-item @click="clkPhoneHistory">
         <v-list-item-title>История звонков</v-list-item-title>
-        <v-list-item-subtitle>PhoneHistory.vue component</v-list-item-subtitle>
+        <v-list-item-subtitle>PhoneHistory.vue</v-list-item-subtitle>
+      </v-list-item>
+      <v-list-item @click="clkPhoneControl">
+        <v-list-item-title>Кругляш состяния</v-list-item-title>
+        <v-list-item-subtitle>PhoneControl.vue</v-list-item-subtitle>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -36,5 +40,8 @@
   }
   function clkPhoneHistory() {
     sip.displayHistory = !sip.displayHistory
+  }
+  function clkPhoneControl() {
+    sip.displayControl = !sip.displayControl
   }
 </script>
