@@ -2,7 +2,6 @@
 import { defineStore } from 'pinia'
 import { markRaw } from 'vue';
 
-// sip.js
 // https://github.com/onsip/SIP.js/blob/main/docs/api.md
 import {
   // Invitation,

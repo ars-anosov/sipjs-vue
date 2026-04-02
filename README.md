@@ -1,5 +1,5 @@
 # sipjs-vue
-WebRTC телефон на базе библиотеки sipjs
+WebRTC телефон на базе библиотеки [sipjs](https://sipjs.com/)
 
 
 

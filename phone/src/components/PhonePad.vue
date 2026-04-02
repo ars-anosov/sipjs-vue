@@ -10,7 +10,7 @@
     <v-row v-if="props.showInput">
       <v-col cols="12" sm="12">
         <v-text-field
-          v-model="sip.calleePhoneNum"
+          v-model="calleeTxt"
           label="98..."
         >
           <template v-slot:append>
@@ -92,10 +92,12 @@
 <script setup>
   import { ref, onMounted, onUnmounted } from 'vue'
   const props = defineProps({
-    showInput: true
+    showInput: { type: Boolean, default: true }
   })
   import { useSipStore } from '@/stores/sip'
   const sip = useSipStore()
+
+  const calleeTxt = ref(sip.calleePhoneNum || '')
 
   onMounted(() => {
     console.log('PhonePad MOUNT')
@@ -127,19 +129,21 @@
     }
     else {
       // Исходящий
+      sip.calleePhoneNum = calleeTxt.value
       sip.handleClkSubmitOut()
     }
   }
 
   function handleReset() {
+    calleeTxt.value = '' 
     sip.handleClkReset(sip.outgoingSession, sip.incomingSession, sip.regNow ? sip.callerUserNum : 'Не зарегистрирован')
   }
 
   function appendKey(key) {
-    sip.calleePhoneNum += key
+    calleeTxt.value += key
   }
   function deleteLast() {
-    sip.calleePhoneNum = sip.calleePhoneNum.slice(0, -1)
+    calleeTxt.value = calleeTxt.value.slice(0, -1)
   }
 </script>
 

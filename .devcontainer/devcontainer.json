@@ -1,0 +1,16 @@
+{
+	"name": "Node",
+
+	"build": { "dockerfile": "Dockerfile" },
+
+	// "image": "node:24-slim",
+	// "customizations": {
+	// 	"vscode": {
+	// 		"settings": {
+	// 			"git.enabled": false
+	// 		}
+	// 	}
+	// },
+
+	"forwardPorts": [3001]
+}
